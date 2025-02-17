@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/rmatsuoka/webtmpl"
 	"github.com/rmatsuoka/webtmpl/internal/api"
 	"github.com/rmatsuoka/webtmpl/internal/env"
 	"github.com/rmatsuoka/webtmpl/internal/x/xhttp"
@@ -24,12 +25,15 @@ func main() {
 	slog.SetDefault(logger)
 
 	for pat, h := range api.Handlers() {
-		http.Handle(pat, h)
+		http.Handle(pat, xhttp.LogHandler(h))
 	}
+	http.Handle("GET /statics/", http.FileServerFS(webtmpl.Content()))
+	http.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
+		http.ServeFileFS(w, req, webtmpl.Content(), "index.html")
+	})
 
 	srv := &http.Server{
-		Addr:    env.APP_LISTEN_ADDR,
-		Handler: xhttp.LogHandler(http.DefaultServeMux),
+		Addr: env.APP_LISTEN_ADDR,
 	}
 
 	idleConnsClosed := make(chan struct{})
