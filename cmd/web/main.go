@@ -20,8 +20,10 @@ func main() {
 	defer stop()
 
 	logger := slog.New(&xslog.Handler{
-		Handler: slog.NewTextHandler(os.Stderr, nil),
-	})
+		Handler: slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+			AddSource: true,
+			Level:     env.APP_LOG_LEVEL,
+		})})
 	slog.SetDefault(logger)
 
 	for pat, h := range api.Handlers() {
