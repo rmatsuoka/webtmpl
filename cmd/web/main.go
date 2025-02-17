@@ -7,6 +7,7 @@ import (
 
 	"github.com/rmatsuoka/webtmpl/internal/api"
 	"github.com/rmatsuoka/webtmpl/internal/env"
+	"github.com/rmatsuoka/webtmpl/internal/x/xhttp"
 	"github.com/rmatsuoka/webtmpl/internal/x/xslog"
 )
 
@@ -21,6 +22,6 @@ func main() {
 	}
 
 	slog.Info("start to listen", "addr", env.APP_LISTEN_ADDR)
-	err := http.ListenAndServe(env.APP_LISTEN_ADDR, nil)
+	err := http.ListenAndServe(env.APP_LISTEN_ADDR, xhttp.LogHandler(http.DefaultServeMux))
 	slog.Error("listen and server", "error", err)
 }
