@@ -18,7 +18,7 @@ func ExampleQuery() {
 	var users []*User
 
 	rows := Query(context.Background(), db, `select id, name from users`)
-	for scan := range rows.Scan() {
+	for scan := range rows.ScanSeq() {
 		var u User
 		scan(&u.ID, &u.Name)
 		users = append(users, &u)

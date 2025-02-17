@@ -18,7 +18,7 @@ type Rows struct {
 	closed bool
 }
 
-func (r *Rows) Scan() iter.Seq[func(...any)] {
+func (r *Rows) ScanSeq() iter.Seq[func(...any)] {
 	return func(yield func(func(...any)) bool) {
 		if r.closed || r.err != nil {
 			return
