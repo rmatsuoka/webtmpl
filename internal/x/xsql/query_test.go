@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 )
 
 func ExampleQuery() {
@@ -14,19 +15,17 @@ func ExampleQuery() {
 
 	var db *sql.DB
 
-	var (
-		users []*User
-		err   error
-	)
-	for scan, scanErr := range Query(context.Background(), db, `select id, name from users`) {
-		if scanErr != nil {
-			err = scanErr
-			break
-		}
+	var users []*User
+
+	rows := Query(context.Background(), db, `select id, name from users`)
+	for scan := range rows.Scan() {
 		var u User
 		scan(&u.ID, &u.Name)
 		users = append(users, &u)
 	}
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
 
-	fmt.Println(users, err)
+	fmt.Println(users)
 }
