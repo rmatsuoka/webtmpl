@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"time"
 
 	"github.com/rmatsuoka/webtmpl/internal/api"
 	"github.com/rmatsuoka/webtmpl/internal/env"
@@ -12,6 +15,9 @@ import (
 )
 
 func main() {
+	sigctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	logger := slog.New(&xslog.Handler{
 		Handler: slog.NewTextHandler(os.Stderr, nil),
 	})
@@ -21,7 +27,26 @@ func main() {
 		http.Handle(pat, h)
 	}
 
+	srv := &http.Server{
+		Addr:    env.APP_LISTEN_ADDR,
+		Handler: xhttp.LogHandler(http.DefaultServeMux),
+	}
+
+	idleConnsClosed := make(chan struct{})
+	go func() {
+		<-sigctx.Done()
+		ctx, stop := context.WithTimeout(context.Background(), time.Second*10)
+		defer stop()
+
+		err := srv.Shutdown(ctx)
+		if err != nil {
+			slog.Error("server shutdown", "error", err)
+		}
+		close(idleConnsClosed)
+	}()
+
 	slog.Info("start to listen", "addr", env.APP_LISTEN_ADDR)
-	err := http.ListenAndServe(env.APP_LISTEN_ADDR, xhttp.LogHandler(http.DefaultServeMux))
+	err := srv.ListenAndServe()
 	slog.Error("listen and server", "error", err)
+	<-idleConnsClosed
 }
