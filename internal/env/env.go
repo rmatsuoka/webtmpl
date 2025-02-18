@@ -5,7 +5,11 @@ import (
 	"encoding"
 	"log/slog"
 	"os"
+
+	"github.com/rmatsuoka/webtmpl/internal/x/must"
 )
+
+var getenv = os.Getenv
 
 var (
 	APP_LISTEN_ADDR = envString("APP_LISTEN_ADDR", ":8080")
@@ -13,11 +17,11 @@ var (
 )
 
 func envString(key string, fallback string) string {
-	return cmp.Or(os.Getenv(key), fallback)
+	return cmp.Or(getenv(key), fallback)
 }
 
 func envAs[T encoding.TextUnmarshaler](key string, fallback string) T {
 	var t T
-	t.UnmarshalText([]byte(cmp.Or(os.Getenv(key), fallback)))
+	must.PanicIf(t.UnmarshalText([]byte(cmp.Or(getenv(key), fallback))))
 	return t
 }
