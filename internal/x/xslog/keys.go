@@ -3,5 +3,5 @@ package xslog
 type key int
 
 const (
-	attrKey key = iota + 1
+	argsKey key = iota + 1
 )

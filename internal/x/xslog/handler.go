@@ -28,7 +28,7 @@ func (h *Handler) WithGroup(name string) slog.Handler {
 }
 
 func (h *Handler) Handle(ctx context.Context, r slog.Record) error {
-	ctxArgs, ok := ctx.Value(attrKey).(contextArgs)
+	ctxArgs, ok := ctx.Value(argsKey).([][]any)
 	if ok {
 		for _, args := range ctxArgs {
 			r.Add(args...)
