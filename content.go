@@ -11,5 +11,5 @@ import (
 var content embed.FS
 
 func Content() fs.FS {
-	return must.Do2(fs.Sub(content, "_content"))
+	return must.Do(fs.Sub(content, "_content"))
 }
