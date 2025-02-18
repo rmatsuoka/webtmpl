@@ -1,12 +1,12 @@
 package must
 
-func Do0(err error) {
+func PanicIf(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
 func Do[T any](v T, err error) T {
-	Do0(err)
+	PanicIf(err)
 	return v
 }
