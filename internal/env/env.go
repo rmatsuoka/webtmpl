@@ -22,6 +22,6 @@ func envString(key string, fallback string) string {
 
 func envAs[T encoding.TextUnmarshaler](key string, fallback string) T {
 	var t T
-	must.PanicIf(t.UnmarshalText([]byte(cmp.Or(getenv(key), fallback))))
+	must.Nil(t.UnmarshalText([]byte(cmp.Or(getenv(key), fallback))))
 	return t
 }
