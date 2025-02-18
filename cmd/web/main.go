@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
 
 	"github.com/rmatsuoka/webtmpl"
 	"github.com/rmatsuoka/webtmpl/internal/api"
@@ -41,7 +40,7 @@ func main() {
 	idleConnsClosed := make(chan struct{})
 	go func() {
 		<-sigctx.Done()
-		ctx, stop := context.WithTimeout(context.Background(), time.Second*10)
+		ctx, stop := context.WithTimeout(context.Background(), env.APP_SHUTDOWN_TIMEOUT)
 		defer stop()
 
 		err := srv.Shutdown(ctx)
