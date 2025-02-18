@@ -31,7 +31,11 @@ func NewRequestJSON(ctx context.Context, method, url string, reqbody any, option
 	return req, nil
 }
 
-func (c *Client) DoJSON(resbody any, req *http.Request) error {
+// If c is nill, use http.DefaultClient.
+func DoJSON(c Client, resbody any, req *http.Request) error {
+	if c == nil {
+		c = http.DefaultClient
+	}
 	res, err := c.Do(req)
 	if err != nil {
 		return err
@@ -64,26 +68,18 @@ func (c *Client) DoJSON(resbody any, req *http.Request) error {
 	return nil
 }
 
-func (c *Client) PostJSON(ctx context.Context, resbody any, url string, reqbody any, options ...RequestOption) error {
+func PostJSON(ctx context.Context, c Client, resbody any, url string, reqbody any, options ...RequestOption) error {
 	req, err := NewRequestJSON(ctx, http.MethodPost, url, reqbody, options...)
 	if err != nil {
 		return err
 	}
-	return c.DoJSON(resbody, req)
+	return DoJSON(c, resbody, req)
 }
 
-func PostJSON(ctx context.Context, resbody any, url string, reqbody any, options ...RequestOption) error {
-	return DefaultClient.PostJSON(ctx, resbody, url, reqbody, options...)
-}
-
-func (c *Client) GetJSON(ctx context.Context, resbody any, url string, options ...RequestOption) error {
+func GetJSON(ctx context.Context, c Client, resbody any, url string, options ...RequestOption) error {
 	req, err := NewRequestJSON(ctx, http.MethodGet, url, nil, options...)
 	if err != nil {
 		return err
 	}
-	return c.DoJSON(resbody, req)
-}
-
-func GetJSON(ctx context.Context, resbody any, url string, options ...RequestOption) error {
-	return DefaultClient.GetJSON(ctx, resbody, url, options...)
+	return DoJSON(c, resbody, req)
 }

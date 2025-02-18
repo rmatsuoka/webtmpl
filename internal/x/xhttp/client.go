@@ -2,8 +2,8 @@ package xhttp
 
 import "net/http"
 
-type Client struct {
-	*http.Client
+type Client interface {
+	Do(*http.Request) (*http.Response, error)
 }
 
-var DefaultClient = &Client{http.DefaultClient}
+var _ Client = (*http.Client)(nil)
