@@ -27,6 +27,10 @@ function setCount(c) {
 function main() {
   getCount().then((c) => setCount(c));
 
+  setInterval(() => {
+    getCount().then((c) => setCount(c));
+  }, 3000);
+
   const form = document.querySelector("form#counter");
   form.addEventListener("submit", (e) => {
     e.preventDefault();
