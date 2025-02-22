@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/rmatsuoka/webtmpl"
+	root "github.com/rmatsuoka/webtmpl"
 	"github.com/rmatsuoka/webtmpl/internal/api"
 	"github.com/rmatsuoka/webtmpl/internal/env"
 	"github.com/rmatsuoka/webtmpl/internal/x/xhttp"
@@ -29,9 +29,9 @@ func main() {
 	for pat, h := range api.Handlers() {
 		http.Handle(pat, xhttp.LogHandler(h))
 	}
-	http.Handle("GET /statics/", http.FileServerFS(webtmpl.Content()))
+	http.Handle("GET /statics/", http.FileServerFS(root.Content()))
 	http.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
-		http.ServeFileFS(w, req, webtmpl.Content(), "index.html")
+		http.ServeFileFS(w, req, root.Content(), "index.html")
 	})
 
 	srv := &http.Server{
