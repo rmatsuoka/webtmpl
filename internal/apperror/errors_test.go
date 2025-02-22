@@ -19,9 +19,9 @@ func Test_lookup(t *testing.T) {
 
 	for _, test := range tests {
 		got, ok := lookup(test.err)
-		if !ok {
-			if test.want != nil {
-				t.Errorf("lookup(%v) returns (%v, %t), want (nil, false)", test.err, got, ok)
+		if test.want == nil {
+			if ok {
+				t.Errorf("lookup(%v) returns (%v, %t), want (<nil>, false)", test.err, got, ok)
 			}
 			continue
 		}
