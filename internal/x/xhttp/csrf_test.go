@@ -23,7 +23,7 @@ func TestCSRF(t *testing.T) {
 		panic("CSRF Attacked!")
 	})
 
-	t.Run("no origins", func(t *testing.T) {
+	t.Run("specify no origins", func(t *testing.T) {
 		tests := []struct {
 			method  string
 			origin  string
@@ -45,7 +45,7 @@ func TestCSRF(t *testing.T) {
 		}
 	})
 
-	t.Run("with specific origins", func(t *testing.T) {
+	t.Run("specify origins", func(t *testing.T) {
 		tests := []struct {
 			method  string
 			origin  string
