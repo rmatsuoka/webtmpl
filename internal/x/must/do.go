@@ -7,6 +7,8 @@ func Nil(err error) {
 }
 
 func Do[T any](v T, err error) T {
-	Nil(err)
+	if err != nil {
+		panic(err)
+	}
 	return v
 }
