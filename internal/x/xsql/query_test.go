@@ -1,10 +1,12 @@
-package xsql
+package xsql_test
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 	"log"
+
+	"github.com/rmatsuoka/webtmpl/internal/x/xsql"
 )
 
 func ExampleQuery() {
@@ -17,7 +19,7 @@ func ExampleQuery() {
 
 	var users []*User
 
-	rows := Query(context.Background(), db, `select id, name from users`)
+	rows := xsql.Query(context.Background(), db, `select id, name from users`)
 	for scan := range rows.ScanSeq() {
 		var u User
 		scan(&u.ID, &u.Name)

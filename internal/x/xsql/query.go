@@ -8,7 +8,6 @@ import (
 )
 
 type Querier interface {
-	QueryRowContext(context.Context, string, ...any) *sql.Row
 	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
 }
 
