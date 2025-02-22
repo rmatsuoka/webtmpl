@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"iter"
+	"sync/atomic"
 )
 
 type Querier interface {
@@ -14,18 +15,16 @@ type Querier interface {
 type Rows struct {
 	rows   *sql.Rows
 	err    error
-	closed bool
+	closed atomic.Bool
 }
 
 func (r *Rows) ScanSeq() iter.Seq[func(...any)] {
 	return func(yield func(func(...any)) bool) {
-		if r.closed || r.err != nil {
+		if r.closed.Swap(true) || r.err != nil {
 			return
 		}
-		defer func() {
-			r.rows.Close()
-			r.closed = true
-		}()
+		defer r.rows.Close()
+
 		for r.rows.Next() {
 			if !yield(func(dest ...any) { r.err = r.rows.Scan(dest...) }) {
 				return
