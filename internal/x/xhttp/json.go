@@ -10,21 +10,14 @@ import (
 )
 
 func NewRequestJSON(ctx context.Context, method, url string, reqbody any, options ...RequestOption) (*http.Request, error) {
-	var reader io.Reader
-	if reqbody != nil {
-		buf, err := json.Marshal(reqbody)
-		if err != nil {
-			return nil, fmt.Errorf("xhttp: new request with JSON: %w", err)
-		}
-		reader = bytes.NewReader(buf)
-	}
-	req, err := http.NewRequestWithContext(ctx, method, url, reader)
+	buf, err := json.Marshal(reqbody)
 	if err != nil {
 		return nil, fmt.Errorf("xhttp: new request with JSON: %w", err)
 	}
-
-	for _, o := range options {
-		o(req)
+	reader := bytes.NewReader(buf)
+	req, err := NewRequest(ctx, method, url, reader, options...)
+	if err != nil {
+		return nil, fmt.Errorf("xhttp: new request with JSON: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
@@ -77,7 +70,7 @@ func PostJSON(ctx context.Context, c Client, resbody any, url string, reqbody an
 }
 
 func GetJSON(ctx context.Context, c Client, resbody any, url string, options ...RequestOption) error {
-	req, err := NewRequestJSON(ctx, http.MethodGet, url, nil, options...)
+	req, err := NewRequest(ctx, http.MethodGet, url, nil, options...)
 	if err != nil {
 		return err
 	}
