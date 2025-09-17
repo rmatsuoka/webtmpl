@@ -20,9 +20,11 @@ func ExampleQuery() {
 	var users []*User
 
 	rows := xsql.Query(context.Background(), db, `select id, name from users`)
-	for scan := range rows.ScanSeq() {
+	defer rows.Close()
+
+	for rows.Next() {
 		var u User
-		scan(&u.ID, &u.Name)
+		rows.Scan(&u.ID, &u.Name)
 		users = append(users, &u)
 	}
 	if err := rows.Err(); err != nil {
